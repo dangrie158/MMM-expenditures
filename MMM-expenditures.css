@@ -1,0 +1,22 @@
+.expenditure table {
+    padding-left: 0;
+    padding-right: 10px;
+    font-size: 80%;
+}
+
+.expenditure .balance { 
+    color: red;
+}
+
+.expenditure .reason {
+    padding-left: 10px;
+}
+
+.expenditure .user {
+    padding-left: 10px;
+}
+
+.expenditure .amount {
+    padding-left: 10px;
+    color: greenyellow;
+}
