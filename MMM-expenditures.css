@@ -4,8 +4,8 @@
     font-size: 80%;
 }
 
-.expenditure .balance { 
-    color: red;
+header .amount { 
+    color: #fff;
 }
 
 .expenditure .reason {

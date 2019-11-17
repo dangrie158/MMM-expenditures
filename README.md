@@ -1,7 +1,7 @@
 # MMM-expenditures
 A MagicMirror2 Module to display information about private expenditures.
 
-This Module is heavily based on [MMM-vvsDeparture](https://github.com/niklaskappler/MMM-vvsDeparture)
+This Module is heavily based on [MMM-vvsDeparture](https://github.com/niklaskappler/MMM-vvsDeparture).
 
 ## Installation
 Run these commands at the root of your magic mirror install.

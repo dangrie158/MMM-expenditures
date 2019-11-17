@@ -6,44 +6,45 @@
  * By dangrie158
  * MIT Licensed.
  */
-Module.register("MMM-expenditures", {
+Module.register('MMM-expenditures', {
 
 	defaults: {
 		host: undefined,
 		reloadInterval: 1 * 60 * 1000, // every minute,
-		lastExpenditures: 10
+		lastExpenditures: 10,
+		currency: 'EUR'
 	},
 
-	requiresVersion: "2.1.0", // Required version of MagicMirror
+	requiresVersion: '2.1.0', // Required version of MagicMirror
 
 	// Define required scripts.
 	getStyles: function () {
-		return ["MMM-expenditures.css"];
+		return ['MMM-expenditures.css'];
 	},
 
 	// Load translations files
-	getTranslations: function() {
+	getTranslations: function () {
 		return {
-			en: "translations/en.json",
-			de: "translations/de.json"
+			en: 'translations/en.json',
+			de: 'translations/de.json'
 		};
 	},
 
 	// Overrides start function.
 	start: function () {
 		var self = this;
-		Log.log("Starting module: " + self.name);
+		Log.log('Starting module: ' + self.name);
 
-		self.balance = [["", 0], ["", 0]];
+		self.balance = [['', 0], ['', 0]];
 		self.expenditures = [];
-		self.sendSocketNotification("GET_EXPENDITURES", { "config": self.config });
+		self.sendSocketNotification('GET_EXPENDITURES', { 'config': self.config });
 	},
 
 	// socketNotificationReceived from helper
 	socketNotificationReceived: function (notification, payload) {
 		var self = this;
 
-		if (notification === "NEW_EXPENDITURES") {
+		if (notification === 'NEW_EXPENDITURES') {
 			self.balance = payload.balance;
 			self.expenditures = payload.expenditures;
 			self.updateDom();
@@ -54,44 +55,51 @@ Module.register("MMM-expenditures", {
 	getDom: function () {
 		var self = this;
 
-		var wrapper = document.createElement("div");
+		var wrapper = document.createElement('div');
 
-		var headerWrappper = document.createElement("header");
-		headerWrappper.innerHTML = self.translate("CURRENT_BALANCE")  + self.calculateBalance(self.balance);
+		var headerWrappper = document.createElement('header');
+		headerWrappper.innerHTML = self.translate('CURRENT_BALANCE') + self.calculateBalance(self.balance);
 		wrapper.appendChild(headerWrappper);
 
-		var tableWrapper = document.createElement("table");
-		tableWrapper.className = "expenditure";
+		var tableWrapper = document.createElement('table');
+		tableWrapper.className = 'expenditure';
 
 		for (var i in self.expenditures) {
 
 			Log.warn(self.expenditures[i]);
 
-			var currentValue = self.departure[i];
+			var currentValue = self.expenditures[i];
 
 			// Row
-			var trWrapper = document.createElement("tr");
+			var trWrapper = document.createElement('tr');
 
 			// Reason
-			var reasonWrapper = document.createElement("td");
-			reasonWrapper.className = "reason";
+			var reasonWrapper = document.createElement('td');
+			reasonWrapper.className = 'reason';
 
 			reasonWrapper.innerHTML = currentValue.reason
 			trWrapper.appendChild(reasonWrapper);
 
 			// User
-			var userWrapper = document.createElement("td");
-			userWrapper.className = "user";
+			var userWrapper = document.createElement('td');
+			userWrapper.className = 'user dimmed';
 			userWrapper.innerHTML = currentValue.username
 			trWrapper.appendChild(userWrapper);
 
 			// Amount
-			var amountWrapper = document.createElement("td");
-			amountWrapper.className = "amount";
+			var amountWrapper = document.createElement('td');
+			amountWrapper.className = 'amount';
 			amountWrapper.innerHTML = self.toCurrency(currentValue.amount);
 			trWrapper.appendChild(amountWrapper);
 
-			trWrapper.className = "small dimmed";
+			let startFade = Math.round(self.expenditures.length * 0.5);
+			let fadeSteps = Math.round(self.expenditures.length - startFade);
+			if (i >= startFade) {			//fading
+				currentFadeStep = i - startFade;
+				trWrapper.style.opacity = 1 - ((1 / fadeSteps) * currentFadeStep);
+			}
+
+			trWrapper.className = 'small bright';
 			tableWrapper.appendChild(trWrapper);
 		}
 
@@ -99,20 +107,23 @@ Module.register("MMM-expenditures", {
 		return wrapper;
 	},
 
-	calculateBalance(balanceData){
+	calculateBalance(balanceData) {
 		let self = this;
-		if( balanceData[0][1] > balanceData[1][1] ){
+		let higherBalance = balanceData[1];
+		let lowerBalance = balanceData[0];
+		if (balanceData[0][1] > balanceData[1][1]) {
 			let higherBalance = balanceData[0];
 			let lowerBalance = balanceData[1];
-		}else{
-			let higherBalance = balanceData[1];
-			let lowerBalance = balanceData[0];
 		}
-		return lowerBalance[0] + ": " + self.toCurrency(lowerBalance[1] - higherBalance[1]);
+		return '<b class="small bright">' + 
+			lowerBalance[0] + 
+			':<span class="amount">' + 
+			self.toCurrency(lowerBalance[1] - higherBalance[1]) +
+			'</span></b>';
 	},
 
-	toCurrency(value){
+	toCurrency(value) {
 		let self = this;
-		return (value / 100).toLocaleString(undefined, {style: "currency", currency: self.config.currency})
+		return (value / 100).toLocaleString(undefined, { style: 'currency', currency: self.config.currency })
 	}
 });
