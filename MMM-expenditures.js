@@ -112,8 +112,8 @@ Module.register('MMM-expenditures', {
 		let higherBalance = balanceData[1];
 		let lowerBalance = balanceData[0];
 		if (balanceData[0][1] > balanceData[1][1]) {
-			let higherBalance = balanceData[0];
-			let lowerBalance = balanceData[1];
+			higherBalance = balanceData[0];
+			lowerBalance = balanceData[1];
 		}
 		return '<b class="small bright">' + 
 			lowerBalance[0] + 
