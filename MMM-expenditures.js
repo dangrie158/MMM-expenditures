@@ -12,7 +12,9 @@ Module.register('MMM-expenditures', {
 		host: undefined,
 		reloadInterval: 1 * 60 * 1000, // every minute,
 		lastExpenditures: 10,
-		currency: 'EUR'
+		currency: 'EUR',
+		username: '',
+		password: ''
 	},
 
 	requiresVersion: '2.1.0', // Required version of MagicMirror
@@ -33,8 +35,6 @@ Module.register('MMM-expenditures', {
 	// Overrides start function.
 	start: function () {
 		var self = this;
-		Log.log('Starting module: ' + self.name);
-
 		self.balance = [['', 0], ['', 0]];
 		self.expenditures = [];
 		self.sendSocketNotification('GET_EXPENDITURES', { 'config': self.config });
@@ -65,8 +65,6 @@ Module.register('MMM-expenditures', {
 		tableWrapper.className = 'expenditure';
 
 		for (var i in self.expenditures) {
-
-			Log.warn(self.expenditures[i]);
 
 			var currentValue = self.expenditures[i];
 
@@ -115,9 +113,9 @@ Module.register('MMM-expenditures', {
 			higherBalance = balanceData[0];
 			lowerBalance = balanceData[1];
 		}
-		return '<b class="small bright">' + 
-			lowerBalance[0] + 
-			':<span class="amount">' + 
+		return '<b class="small bright">' +
+			lowerBalance[0] +
+			':<span class="amount">' +
 			self.toCurrency(lowerBalance[1] - higherBalance[1]) +
 			'</span></b>';
 	},
